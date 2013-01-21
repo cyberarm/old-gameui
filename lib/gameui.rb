@@ -46,7 +46,7 @@ class GameUI < Chingu::GameState
     super
     process_ui
     @rects.each do |rect|
-      if $window.mouse_x.between?(rect[:x].to_i,rect[:x].to_i+rect[:width].to_i) && $window.mouse_y.between?(rect[:y].to_i,rect[:y].to_i+rect[:height].to_i)
+      if $window.mouse_x.between?(rect[:x],rect[:x]+rect[:width]) && $window.mouse_y.between?(rect[:y],rect[:y]+rect[:height])
         rect[:color]=rect[:hover_color]
         @tooltip.text = rect[:tooltip].to_s if defined?(rect[:tooltip])
         @tooltip.y    = rect[:y]+10
