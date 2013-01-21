@@ -1,7 +1,7 @@
 require "pp"
 require "chingu"
 
-class GUI < Chingu::GameState
+class GameUI < Chingu::GameState
   include Chingu
   def initialize(options={})
     super

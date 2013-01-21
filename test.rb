@@ -15,7 +15,7 @@ class Test < Chingu::Window
   end
 end
 
-class TestUI < GUI
+class TestUI < GameUI
   def initialize(options={})
     options[:title]="#{$title}"
     super
@@ -37,7 +37,7 @@ class TestUI < GUI
   end
 end
 
-class SoloUI < GUI
+class SoloUI < GameUI
   def initialize(options={})
     options[:title]="Singleplayer"
     super
@@ -47,7 +47,7 @@ class SoloUI < GUI
   end
 end
 
-class MultiplayerUI < GUI
+class MultiplayerUI < GameUI
   def initialize(options={})
     options[:title]="Multiplayer"
     super
