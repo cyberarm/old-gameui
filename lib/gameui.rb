@@ -11,7 +11,10 @@ class GameUI < Chingu::GameState
     @elements = []
     @rects    = []
     @tooltip  = Chingu::Text.new("", x: 1, y: 80, size: 50, font: @font)
+    @post_ui_create = true
     @released_left_mouse_button = false
+    @released_return = false
+    @selected = nil
 
     @elements.push({
       object: Chingu::Text.new("#{options[:title]}",
@@ -20,14 +23,6 @@ class GameUI < Chingu::GameState
       size: 70,
       font: @font)
       })
-
-    on_input([:left_mouse_button], :released_left_mouse_button)
-  end
-
-  def push_game_state(constant, options={})
-    super
-    @rects    = []
-    @elements = []
   end
 
   def draw
@@ -45,21 +40,42 @@ class GameUI < Chingu::GameState
   def update
     super
     process_ui
+
     @rects.each do |rect|
-      if $window.mouse_x.between?(rect[:x],rect[:x]+rect[:width]) && $window.mouse_y.between?(rect[:y],rect[:y]+rect[:height])
+      if $window.mouse_x.between?(rect[:x],rect[:x]+rect[:width]) && $window.mouse_y.between?(rect[:y],rect[:y]+rect[:height]) or rect == @selected
         rect[:color]=rect[:hover_color]
+        @selected = rect
         @tooltip.text = rect[:tooltip].to_s if defined?(rect[:tooltip])
         @tooltip.y    = rect[:y]+10
-        if @released_left_mouse_button && $window.button_down?(Gosu::MsLeft)
-          sleep(0.1)
+        if @released_left_mouse_button or @released_return
           rect[:block].call
         end
       else
         rect[:color]=rect[:old_color]
       end
     end
+
+    post_ui_create
+
     @tooltip.text = "" unless show_tooltip?
     @released_left_mouse_button = false
+    @released_return = false
+    @post_ui_create = false
+  end
+
+  def button_up(id)
+    if id == Gosu::MsLeft
+      @released_left_mouse_button = true
+
+    elsif id == Gosu::KbEnter or id == Gosu::KbReturn
+      @released_return = true
+
+    elsif id == Gosu::KbUp
+      ui_select(:up)
+
+    elsif id == Gosu::KbDown
+      ui_select(:down)
+    end
   end
 
   def button(text,options={}, &block)
@@ -118,6 +134,30 @@ class GameUI < Chingu::GameState
     end
   end
 
+  def post_ui_create
+    @selected = @rects.first if @post_ui_create
+  end
+
+  def ui_select(method)
+    if @selected == nil
+      @selected = @rects.first
+    end
+
+    if method == :up
+      num = @rects.index(@selected)
+      @selected = @rects[num-1] unless num == 0
+      @selected = @rects[@rects.count-1] if num == 0
+
+    elsif method == :down
+      num = @rects.index(@selected)
+      if @rects.count-1<num+1
+        @selected = @rects.first
+      else
+        @selected = @rects[num+1]
+      end
+    end
+  end
+
   def show_tooltip?
     show = false
     @rects.each do |rect|
@@ -127,9 +167,5 @@ class GameUI < Chingu::GameState
     end
 
     return show
-  end
-
-  def released_left_mouse_button
-    @released_left_mouse_button = true
   end
 end
