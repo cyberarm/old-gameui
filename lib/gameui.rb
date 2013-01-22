@@ -70,13 +70,13 @@ class GameUI < Chingu::GameState
     if id == Gosu::MsLeft
       @released_left_mouse_button = true
 
-    elsif id == Gosu::KbEnter or id == Gosu::KbReturn
+    elsif id == Gosu::KbEnter or id == Gosu::KbReturn or id == Gosu::GpButton0
       @released_return = true
 
-    elsif id == Gosu::KbUp
+    elsif id == Gosu::KbUp or id == Gosu::GpUp
       ui_select(:up)
 
-    elsif id == Gosu::KbDown
+    elsif id == Gosu::KbDown or id == Gosu::GpDown
       ui_select(:down)
     end
   end
@@ -88,7 +88,6 @@ class GameUI < Chingu::GameState
       return false
     end
   end
-
 
   def button(text,options={}, &block)
     @get_available_y = 100
