@@ -19,7 +19,7 @@ class GameMenu < GameUI
     options[:title] = "GameUI" # Set menu header
     super
     button("Play", tooltip: "play the game") do
-      puts "Writing this yourself"
+      puts "Write this yourself"
     end
   end
 end
