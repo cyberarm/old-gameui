@@ -42,12 +42,15 @@ class GameUI < Chingu::GameState
     process_ui
 
     @rects.each do |rect|
-      if $window.mouse_x.between?(rect[:x],rect[:x]+rect[:width]) && $window.mouse_y.between?(rect[:y],rect[:y]+rect[:height]) or rect == @selected
+      if collision_with(rect) or rect == @selected
         rect[:color]=rect[:hover_color]
         @selected = rect
         @tooltip.text = rect[:tooltip].to_s if defined?(rect[:tooltip])
         @tooltip.y    = rect[:y]+10
-        if @released_left_mouse_button or @released_return
+
+        if collision_with(rect) && @released_left_mouse_button
+          rect[:block].call
+        elsif @released_return
           rect[:block].call
         end
       else
@@ -77,6 +80,15 @@ class GameUI < Chingu::GameState
       ui_select(:down)
     end
   end
+
+  def collision_with(rect)
+    if $window.mouse_x.between?(rect[:x],rect[:x]+rect[:width]) && $window.mouse_y.between?(rect[:y],rect[:y]+rect[:height])
+      return true
+    else
+      return false
+    end
+  end
+
 
   def button(text,options={}, &block)
     @get_available_y = 100
@@ -119,7 +131,6 @@ class GameUI < Chingu::GameState
     @rects.each do |rect|
       unless @big
         @big = rect
-        # p true
       end
 
       if @big[:width] < rect[:width]
